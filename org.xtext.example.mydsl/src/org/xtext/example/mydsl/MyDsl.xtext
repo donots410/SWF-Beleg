@@ -1,0 +1,27 @@
+grammar org.xtext.example.mydsl.MyDsl with org.eclipse.xtext.common.Terminals
+
+generate myDsl "http://www.xtext.org/example/mydsl/MyDsl"
+
+Prologdsl 	: progam=Program exquery=Exquery;
+Program 	: clause+=Clause+;
+Exquery		: '?-' query=Query '.';
+Query		: predicate=Predicate (',' nextpredicate+=Predicate)*;
+Clause		: fact=Fact | rule=Rule;
+Fact		: predicate=Predicate '.';
+Rule		: predicate=Predicate ':-' query=Query '.';
+Predicate	: functor=Functor '(' term=Term (',' nextterm+=Term)* ')';
+Functor		: name=ID;
+Term		: term=(Atom | List); //atom=Atom | list=List;
+Atom		: at=(ID | NUMBER2 | VARIABLE2);
+List		: ka='[' (atom=Atom (rest=Rest)?)? kz=']';
+	Rest		: opt= ListOpt1 | ListOpt2 | ListOpt3;
+		ListOpt1		: '|' atom=Atom;
+		ListOpt2		: '|' '[' atom=Atom (',' nextatom+=Atom)* ']';
+		ListOpt3		: ',' atom=Atom (',' nextatom+=Atom)*;
+Folge		: atom=Atom (',' nextatom+=Atom)*;
+
+
+@Override 
+terminal ID			: 'a' .. 'z' ('a' .. 'z' | '0' .. '9')*; //noch hinzufügen: '_' | 'A' .. 'Z'
+terminal NUMBER2	: INT;
+terminal VARIABLE2	: 'A' .. 'Z';
